@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'weather_service.dart';
 import 'dart:io';
 
+
 Future<void> main() async {
-  print('Test');
-  print('Current path: ${Directory.current.path}');
-  await dotenv.load(fileName: 'practice/.env');
+  //await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
 
@@ -37,6 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String weatherInfo = 'Fetching weather data...';
+  String cityName = 'London'; // Default city name
 
   @override
   void initState() {
@@ -47,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _fetchWeatherData() async {
     try {
       var weatherService = WeatherService();
-      var data = await weatherService.getWeather('London'); // Example city
+      var data = await weatherService.getWeather(cityName); // Use the cityName variable
       setState(() {
         weatherInfo = 'Temperature: ${data['main']['temp']} °C\n'
                       'Condition: ${data['weather'][0]['description']}';
@@ -66,7 +65,19 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Text(weatherInfo),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              cityName, // Display the city name
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            Text(
+              weatherInfo,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          ],
+        ),
       ),
     );
   }
