@@ -16,10 +16,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        textTheme: TextTheme(
-          headline1: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold),
-          headline6: TextStyle(fontSize: 18.0),
-          bodyText2: TextStyle(fontSize: 14.0),
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold),
+          titleLarge: TextStyle(fontSize: 18.0),
+          bodyLarge: TextStyle(fontSize: 14.0),
         ),
       ),
       home: const MyHomePage(title: 'Weather App'),
@@ -39,17 +39,25 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String weatherInfo = 'Fetching weather data...';
   String cityName = 'Zagreb'; // Default city name
+  final TextEditingController _cityController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _cityController.text = cityName; // Set the default city name in the search bar
     _fetchWeatherData();
+  }
+
+  @override
+  void dispose() {
+    _cityController.dispose(); // Dispose the controller when the widget is removed
+    super.dispose();
   }
 
   Future<void> _fetchWeatherData() async {
     try {
       var weatherService = WeatherService();
-      var data = await weatherService.getWeather(cityName); 
+      var data = await weatherService.getWeather(cityName);
       setState(() {
         weatherInfo = 'Temperature: ${data['main']['temp']} °C\n'
                       'Condition: ${data['weather'][0]['description']}';
@@ -61,6 +69,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _onSearch() {
+    setState(() {
+      cityName = _cityController.text;
+      weatherInfo = 'Fetching weather data...';
+    });
+    _fetchWeatherData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,27 +84,51 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              WeatherIcons.wi_day_sunny, // To do: change icon based on weather condition
-              size: 100,
-              color: Colors.blueGrey,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start, // Align to the top
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _cityController,
+              decoration: InputDecoration(
+                labelText: 'Enter a city',
+                hintText: 'e.g. Zagreb',
+                border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: _onSearch,
+                ),
+              ),
+              onSubmitted: (value) => _onSearch(),
             ),
-            SizedBox(height: 20),
-            Text(
-              cityName,
-              style: Theme.of(context).textTheme.headlineLarge,
+          ),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    cityName,
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                  const Icon(
+                    WeatherIcons.wi_day_sunny, // Placeholder, should be dynamic
+                    size: 100,
+                    color: Colors.blueGrey,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    weatherInfo,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
             ),
-            Text(
-              weatherInfo,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
+
