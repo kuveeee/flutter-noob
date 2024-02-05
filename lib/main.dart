@@ -90,18 +90,23 @@ class _MyHomePageState extends State<MyHomePage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
-              controller: _cityController,
-              decoration: InputDecoration(
-                labelText: 'Enter a city',
-                hintText: 'e.g. Zagreb',
-                border: OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: _onSearch,
-                ),
-              ),
-              onSubmitted: (value) => _onSearch(),
-            ),
+  controller: _cityController,
+  decoration: InputDecoration(
+    filled: true, //Needed for a background color
+    fillColor: Colors.blue.withOpacity(0.3),
+    hintText: 'e.g. Zagreb, London, Paris...',
+    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+    labelText: 'Enter a city',
+    labelStyle: TextStyle(color: Colors.white),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30.0),
+      borderSide: BorderSide.none,
+    ),
+  ),
+  style: TextStyle(color: Colors.white), //Text color
+  onSubmitted: (value) => _onSearch(),
+),
+
           ),
           Expanded(
             child: Center(
@@ -113,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   const Icon(
-                    WeatherIcons.wi_day_sunny, // Placeholder, should be dynamic
+                    WeatherIcons.wi_day_sunny, // Placeholder, will be replaced by the actual weather icon
                     size: 100,
                     color: Colors.blueGrey,
                   ),
