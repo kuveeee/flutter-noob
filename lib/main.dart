@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _cityController.text = cityName; // Set the default city name in the search bar
+    _cityController.text = cityName; // Set the default city name in the text field
     _fetchWeatherData();
   }
 
@@ -59,8 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
       var weatherService = WeatherService();
       var data = await weatherService.getWeather(cityName);
       setState(() {
-        weatherInfo = 'Temperature: ${data['main']['temp']} °C\n'
-                      'Condition: ${data['weather'][0]['description']}';
+        weatherInfo = '${data['main']['temp']} °C\n ${data['weather'][0]['description']}';
       });
     } catch (e) {
       setState(() {
@@ -84,56 +83,42 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         elevation: 0,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start, // Align to the top
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-  controller: _cityController,
-  decoration: InputDecoration(
-    filled: true, //Needed for a background color
-    fillColor: Colors.blue.withOpacity(0.3),
-    hintText: 'e.g. Zagreb, London, Paris...',
-    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-    labelText: 'Enter a city',
-    labelStyle: TextStyle(color: Colors.white),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30.0),
-      borderSide: BorderSide.none,
-    ),
-  ),
-  style: TextStyle(color: Colors.white), //Text color
-  onSubmitted: (value) => _onSearch(),
-),
-
-          ),
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    cityName,
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const Icon(
-                    WeatherIcons.wi_day_sunny, // Placeholder, will be replaced by the actual weather icon
-                    size: 100,
-                    color: Colors.blueGrey,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    weatherInfo,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ],
+      body: SingleChildScrollView( // Enable scrolling when keyboard is open
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextFormField(
+                controller: _cityController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter a city',
+                  hintStyle: TextStyle(color: Colors.grey), // Style for the hint text
+                  border: InputBorder.none, // No border
+                ),
+                style: const TextStyle(
+                  fontSize: 32.0, // Larger font size
+                  fontWeight: FontWeight.bold, // Bold text
+                ),
+                textAlign: TextAlign.center, // Center align text
+                onFieldSubmitted: (value) => _onSearch(),
               ),
             ),
-          ),
-        ],
+            if (weatherInfo != 'Fetching weather data...') ...[
+              const Icon(
+                WeatherIcons.wi_day_sunny, // Placeholder for weather icon
+                size: 100,
+                color: Colors.blueGrey,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                weatherInfo,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
 }
-
