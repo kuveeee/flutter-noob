@@ -103,6 +103,31 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  IconData _getWeatherIcon(String description) {
+    switch (description.toLowerCase()) {
+      case 'clear sky':
+        return WeatherIcons.wi_day_sunny;
+      case 'few clouds':
+        return WeatherIcons.wi_day_cloudy;
+      case 'scattered clouds':
+        return WeatherIcons.wi_cloud;
+      case 'broken clouds':
+        return WeatherIcons.wi_cloudy;
+      case 'shower rain':
+        return WeatherIcons.wi_showers;
+      case 'rain':
+        return WeatherIcons.wi_rain;
+      case 'thunderstorm':
+        return WeatherIcons.wi_thunderstorm;
+      case 'snow':
+        return WeatherIcons.wi_snow;
+      case 'mist':
+        return WeatherIcons.wi_fog;
+      default:
+        return WeatherIcons.wi_day_sunny;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(
-                      WeatherIcons.wi_day_sunny, // Placeholder for dynamic icon
+                      _getWeatherIcon(weatherDescription),
                       size: 100,
                       color: Colors.white,
                     ),
