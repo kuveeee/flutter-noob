@@ -18,8 +18,8 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: const TextTheme(
           displayLarge: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold),
-          titleLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
-          bodyLarge: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400),
+          titleLarge: TextStyle(fontSize: 18.0),
+          bodyLarge: TextStyle(fontSize: 14.0),
         ),
       ),
       home: const MyHomePage(title: 'Weather App'),
@@ -39,9 +39,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String weatherInfo = 'Fetching weather data...';
   String cityName = 'Zagreb'; // Default city name
+  String weatherDescription = 'clear sky'; // Default weather description
   final TextEditingController _cityController = TextEditingController();
-  Color startColor = Colors.blue.shade700;
-  Color endColor = Colors.blue.shade200;
 
   @override
   void initState() {
@@ -61,39 +60,13 @@ class _MyHomePageState extends State<MyHomePage> {
       var weatherService = WeatherService();
       var data = await weatherService.getWeather(cityName);
       setState(() {
-        weatherInfo =
-            '${data['main']['temp']} °C\n${data['weather'][0]['description']}';
-        _updateBackgroundColor(data['weather'][0]['main']);
+        weatherInfo = '${data['main']['temp']} °C\n${data['weather'][0]['description']}';
+        weatherDescription = data['weather'][0]['description'];
       });
     } catch (e) {
       setState(() {
         weatherInfo = 'Failed to load weather data';
       });
-    }
-  }
-
-  void _updateBackgroundColor(String weatherCondition) {
-    // Map weather condition to colors
-    switch (weatherCondition) {
-      case 'Clear':
-        startColor = Colors.yellow.shade700;
-        endColor = Colors.orange.shade400;
-        break;
-      case 'Clouds':
-        startColor = Colors.grey.shade700;
-        endColor = Colors.grey.shade400;
-        break;
-      case 'Rain':
-        startColor = Colors.blue.shade900;
-        endColor = Colors.blue.shade600;
-        break;
-      case 'Snow':
-        startColor = Colors.white;
-        endColor = Colors.lightBlue.shade100;
-        break;
-      default:
-        startColor = Colors.blue.shade700;
-        endColor = Colors.blue.shade200;
     }
   }
 
@@ -105,6 +78,31 @@ class _MyHomePageState extends State<MyHomePage> {
     _fetchWeatherData();
   }
 
+  Color _getBackgroundColor(String description) {
+    switch (description.toLowerCase()) {
+      case 'clear sky':
+        return Colors.orangeAccent;
+      case 'few clouds':
+        return Colors.blueGrey;
+      case 'scattered clouds':
+        return Colors.grey;
+      case 'broken clouds':
+        return Colors.blueGrey.shade700;
+      case 'shower rain':
+        return Colors.indigo;
+      case 'rain':
+        return Colors.blue;
+      case 'thunderstorm':
+        return Colors.deepPurple;
+      case 'snow':
+        return Colors.lightBlueAccent;
+      case 'mist':
+        return Colors.lightBlue;
+      default:
+        return Colors.blue.shade200;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,33 +112,43 @@ class _MyHomePageState extends State<MyHomePage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             stops: [0.1, 0.9],
-            colors: [startColor, endColor],
+            colors: [
+              _getBackgroundColor(weatherDescription).withOpacity(0.7),
+              _getBackgroundColor(weatherDescription).withOpacity(1.0),
+            ],
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TextFormField(
-                    controller: _cityController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter a city',
-                      hintStyle: TextStyle(color: Colors.white54),
-                      border: InputBorder.none,
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 32.0,
-                      fontWeight: FontWeight.bold,
+                    child: TextFormField(
+                      controller: _cityController,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.search, color: Colors.white),
+                        hintText: 'Enter a city',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                      ),
+                      textAlign: TextAlign.center,
+                      onFieldSubmitted: (value) => _onSearch(),
                     ),
-                    textAlign: TextAlign.center,
-                    onFieldSubmitted: (value) => _onSearch(),
                   ),
                 ),
-                const SizedBox(height: 80),
+                const SizedBox(height: 20),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -149,29 +157,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       size: 100,
                       color: Colors.white,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 80),
                     Text(
                       cityName,
                       style: Theme.of(context)
                           .textTheme
                           .displayLarge
                           ?.copyWith(color: Colors.white),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     Text(
-                      weatherInfo.split('\n')[0], // Temperature
+                      weatherInfo,
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
                           ?.copyWith(color: Colors.white),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      weatherInfo.split('\n')[1], // Description
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: Colors.white70),
                       textAlign: TextAlign.center,
                     ),
                   ],
