@@ -40,6 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String weatherInfo = 'Fetching weather data...';
   String cityName = 'Zagreb'; // Default city name
   final TextEditingController _cityController = TextEditingController();
+  Color startColor = Colors.blue.shade700;
+  Color endColor = Colors.blue.shade200;
 
   @override
   void initState() {
@@ -59,12 +61,39 @@ class _MyHomePageState extends State<MyHomePage> {
       var weatherService = WeatherService();
       var data = await weatherService.getWeather(cityName);
       setState(() {
-        weatherInfo = '${data['main']['temp']} °C\n ${data['weather'][0]['description']}';
+        weatherInfo =
+            '${data['main']['temp']} °C\n ${data['weather'][0]['description']}';
+        _updateBackgroundColor(data['weather'][0]['main']);
       });
     } catch (e) {
       setState(() {
         weatherInfo = 'Failed to load weather data';
       });
+    }
+  }
+
+  void _updateBackgroundColor(String weatherCondition) {
+    // Map weather condition to colors
+    switch (weatherCondition) {
+      case 'Clear':
+        startColor = Colors.yellow.shade700;
+        endColor = Colors.orange.shade400;
+        break;
+      case 'Clouds':
+        startColor = Colors.grey.shade700;
+        endColor = Colors.grey.shade400;
+        break;
+      case 'Rain':
+        startColor = Colors.blue.shade900;
+        endColor = Colors.blue.shade600;
+        break;
+      case 'Snow':
+        startColor = Colors.white;
+        endColor = Colors.lightBlue.shade100;
+        break;
+      default:
+        startColor = Colors.blue.shade700;
+        endColor = Colors.blue.shade200;
     }
   }
 
@@ -79,44 +108,62 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView( // Enable scrolling when keyboard is open
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextFormField(
-                controller: _cityController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter a city',
-                  hintStyle: TextStyle(color: Colors.grey), // Style for the hint text
-                  border: InputBorder.none, // No border
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            stops: [0.1, 0.9],
+            colors: [startColor, endColor],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextFormField(
+                    controller: _cityController,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter a city',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      border: InputBorder.none,
+                    ),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                    onFieldSubmitted: (value) => _onSearch(),
+                  ),
                 ),
-                style: const TextStyle(
-                  fontSize: 32.0, // Larger font size
-                  fontWeight: FontWeight.bold, // Bold text
+                //Expanded(
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      WeatherIcons.wi_day_sunny, // Placeholder for dynamic icon
+                      size: 100,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 80),
+                    Text(
+                      weatherInfo,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center, // Center align text
-                onFieldSubmitted: (value) => _onSearch(),
-              ),
+                //),
+              ],
             ),
-            if (weatherInfo != 'Fetching weather data...') ...[
-              const Icon(
-                WeatherIcons.wi_day_sunny, // Placeholder for weather icon
-                size: 100,
-                color: Colors.blueGrey,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                weatherInfo,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );
