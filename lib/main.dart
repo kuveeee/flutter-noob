@@ -18,8 +18,8 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: const TextTheme(
           displayLarge: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold),
-          titleLarge: TextStyle(fontSize: 18.0),
-          bodyLarge: TextStyle(fontSize: 14.0),
+          titleLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
+          bodyLarge: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400),
         ),
       ),
       home: const MyHomePage(title: 'Weather App'),
@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       var data = await weatherService.getWeather(cityName);
       setState(() {
         weatherInfo =
-            '${data['main']['temp']} °C\n ${data['weather'][0]['description']}';
+            '${data['main']['temp']} °C\n${data['weather'][0]['description']}';
         _updateBackgroundColor(data['weather'][0]['main']);
       });
     } catch (e) {
@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
             child: Column(
               children: <Widget>[
                 Padding(
@@ -140,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onFieldSubmitted: (value) => _onSearch(),
                   ),
                 ),
-                //Expanded(
+                const SizedBox(height: 80),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -149,18 +149,33 @@ class _MyHomePageState extends State<MyHomePage> {
                       size: 100,
                       color: Colors.white,
                     ),
-                    const SizedBox(height: 80),
+                    const SizedBox(height: 20),
                     Text(
-                      weatherInfo,
+                      cityName,
+                      style: Theme.of(context)
+                          .textTheme
+                          .displayLarge
+                          ?.copyWith(color: Colors.white),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      weatherInfo.split('\n')[0], // Temperature
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
                           ?.copyWith(color: Colors.white),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      weatherInfo.split('\n')[1], // Description
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(color: Colors.white70),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-                //),
               ],
             ),
           ),
