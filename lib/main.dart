@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const MyHomePage(title: 'Weather App'),
+      debugShowCheckedModeBanner: false,  // Disable the debug banner
     );
   }
 }
