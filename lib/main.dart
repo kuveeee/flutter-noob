@@ -128,8 +128,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  bool _isDarkColor(Color color) {
+    // Calculate the brightness of the color using the formula for luminance
+    final double brightness = (color.red * 0.299 + color.green * 0.587 + color.blue * 0.114) / 255;
+    return brightness < 0.5;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final backgroundColor = _getBackgroundColor(weatherDescription);
+    final textColor = _isDarkColor(backgroundColor) ? Colors.white : Colors.black;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -138,8 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
             end: Alignment.bottomRight,
             stops: [0.1, 0.9],
             colors: [
-              _getBackgroundColor(weatherDescription).withOpacity(0.7),
-              _getBackgroundColor(weatherDescription).withOpacity(1.0),
+              backgroundColor.withOpacity(0.7),
+              backgroundColor.withOpacity(1.0),
             ],
           ),
         ),
@@ -164,8 +173,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(vertical: 15),
                       ),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: textColor,
                         fontSize: 18.0,
                       ),
                       textAlign: TextAlign.center,
@@ -180,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icon(
                       _getWeatherIcon(weatherDescription),
                       size: 100,
-                      color: Colors.white,
+                      color: textColor,
                     ),
                     const SizedBox(height: 80),
                     Text(
@@ -188,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: Theme.of(context)
                           .textTheme
                           .displayLarge
-                          ?.copyWith(color: Colors.white),
+                          ?.copyWith(color: textColor),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
@@ -197,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
-                          ?.copyWith(color: Colors.white),
+                          ?.copyWith(color: textColor),
                       textAlign: TextAlign.center,
                     ),
                   ],
