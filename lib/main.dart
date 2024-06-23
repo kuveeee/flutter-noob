@@ -6,13 +6,14 @@ void main() {
   runApp(const MyApp());
 }
 
+// Main application widget
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SkyScout',
+      title: 'SkyScout',  // App name
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Stateful widget for the main screen
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -47,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _cityController.text = cityName; // Set the default city name in the text field
-    _fetchWeatherData();
+    _fetchWeatherData(); // Fetch weather data on init
   }
 
   @override
@@ -56,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  // Fetch weather data for the specified city
   Future<void> _fetchWeatherData() async {
     try {
       var weatherService = WeatherService();
@@ -71,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // Handle search action
   void _onSearch() {
     setState(() {
       cityName = _cityController.text;
@@ -79,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _fetchWeatherData();
   }
 
+  // Get background color based on weather description
   Color _getBackgroundColor(String description) {
     switch (description.toLowerCase()) {
       case 'clear sky':
@@ -104,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // Get weather icon based on weather description
   IconData _getWeatherIcon(String description) {
     switch (description.toLowerCase()) {
       case 'clear sky':
@@ -129,8 +135,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // Check if the background color is dark
   bool _isDarkColor(Color color) {
-    // Calculate the brightness of the color using the formula for luminance
     final double brightness = (color.red * 0.299 + color.green * 0.587 + color.blue * 0.114) / 255;
     return brightness < 0.5;
   }
