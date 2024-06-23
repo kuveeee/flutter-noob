@@ -4,7 +4,7 @@
 ## Fakultet informatike u Puli
 ### Kolegij: Izrada informatičkih projekata
 
-![Showcase](Showcase-1.png)
+![Showcase](Showcase.png)
 
 ## Getting Started
 To run the app write "flutter run" in the console. Than, choose your preffered device.
