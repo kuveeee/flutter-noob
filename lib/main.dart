@@ -45,6 +45,31 @@ class _MyHomePageState extends State<MyHomePage> {
   String weatherDescription = 'clear sky'; // Default weather description
   final TextEditingController _cityController = TextEditingController();
 
+  // Maps for background colors and weather icons
+  final Map<String, Color> _backgroundColorMap = {
+    'clear sky': Colors.orangeAccent,
+    'few clouds': Colors.blueGrey,
+    'scattered clouds': Colors.grey,
+    'broken clouds': Colors.blueGrey.shade700,
+    'shower rain': Colors.indigo,
+    'rain': Colors.blue,
+    'thunderstorm': Colors.deepPurple,
+    'snow': Colors.lightBlueAccent,
+    'mist': Colors.lightBlue,
+  };
+
+  final Map<String, IconData> _weatherIconMap = {
+    'clear sky': WeatherIcons.wi_day_sunny,
+    'few clouds': WeatherIcons.wi_day_cloudy,
+    'scattered clouds': WeatherIcons.wi_cloud,
+    'broken clouds': WeatherIcons.wi_cloudy,
+    'shower rain': WeatherIcons.wi_showers,
+    'rain': WeatherIcons.wi_rain,
+    'thunderstorm': WeatherIcons.wi_thunderstorm,
+    'snow': WeatherIcons.wi_snow,
+    'mist': WeatherIcons.wi_fog,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -83,68 +108,13 @@ class _MyHomePageState extends State<MyHomePage> {
     _fetchWeatherData();
   }
 
-  // Get background color based on weather description
-  Color _getBackgroundColor(String description) {
-    switch (description.toLowerCase()) {
-      case 'clear sky':
-        return Colors.orangeAccent;
-      case 'few clouds':
-        return Colors.blueGrey;
-      case 'scattered clouds':
-        return Colors.grey;
-      case 'broken clouds':
-        return Colors.blueGrey.shade700;
-      case 'shower rain':
-        return Colors.indigo;
-      case 'rain':
-        return Colors.blue;
-      case 'thunderstorm':
-        return Colors.deepPurple;
-      case 'snow':
-        return Colors.lightBlueAccent;
-      case 'mist':
-        return Colors.lightBlue;
-      default:
-        return Colors.blue.shade200;
-    }
-  }
-
-  // Get weather icon based on weather description
-  IconData _getWeatherIcon(String description) {
-    switch (description.toLowerCase()) {
-      case 'clear sky':
-        return WeatherIcons.wi_day_sunny;
-      case 'few clouds':
-        return WeatherIcons.wi_day_cloudy;
-      case 'scattered clouds':
-        return WeatherIcons.wi_cloud;
-      case 'broken clouds':
-        return WeatherIcons.wi_cloudy;
-      case 'shower rain':
-        return WeatherIcons.wi_showers;
-      case 'rain':
-        return WeatherIcons.wi_rain;
-      case 'thunderstorm':
-        return WeatherIcons.wi_thunderstorm;
-      case 'snow':
-        return WeatherIcons.wi_snow;
-      case 'mist':
-        return WeatherIcons.wi_fog;
-      default:
-        return WeatherIcons.wi_day_sunny;
-    }
-  }
-
-  // Check if the background color is dark
-  bool _isDarkColor(Color color) {
-    final double brightness = (color.red * 0.299 + color.green * 0.587 + color.blue * 0.114) / 255;
-    return brightness < 0.5;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = _getBackgroundColor(weatherDescription);
-    final textColor = _isDarkColor(backgroundColor) ? Colors.white : Colors.black;
+    // Calculate the background color based on weather description
+    final backgroundColor = _backgroundColorMap[weatherDescription.toLowerCase()] ?? Colors.blue.shade200;
+    // Calculate the brightness of the color using the formula for luminance
+    final bool isDarkColor = (backgroundColor.red * 0.299 + backgroundColor.green * 0.587 + backgroundColor.blue * 0.114) / 255 < 0.5;
+    final textColor = isDarkColor ? Colors.white : Colors.black;
 
     return Scaffold(
       body: Container(
@@ -194,26 +164,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(
-                      _getWeatherIcon(weatherDescription),
+                      _weatherIconMap[weatherDescription.toLowerCase()] ?? WeatherIcons.wi_day_sunny,
                       size: 100,
                       color: textColor,
                     ),
                     const SizedBox(height: 80),
                     Text(
                       cityName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .displayLarge
-                          ?.copyWith(color: textColor),
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(color: textColor),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
                     Text(
                       weatherInfo,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: textColor),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: textColor),
                       textAlign: TextAlign.center,
                     ),
                   ],
