@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
           bodyLarge: TextStyle(fontSize: 14.0),
         ),
       ),
-      home: const MyHomePage(title: 'Weather App'),
+      home: const MyHomePage(title: 'SkyScout'),
       debugShowCheckedModeBanner: false,  // Disable the debug banner
     );
   }
